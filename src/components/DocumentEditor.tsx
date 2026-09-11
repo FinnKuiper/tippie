@@ -6,6 +6,19 @@ import Table from "@tiptap/extension-table";
 import TableRow from "@tiptap/extension-table-row";
 import TableHeader from "@tiptap/extension-table-header";
 import TableCell from "@tiptap/extension-table-cell";
+import {
+  Bold,
+  BookMarked,
+  Heading1,
+  Heading2,
+  Heading3,
+  Italic,
+  List,
+  ListOrdered,
+  Table as TableIcon,
+  Underline as UnderlineIcon,
+  type LucideIcon,
+} from "lucide-react";
 import { useDocumentStore } from "../store";
 import { checkSentence, findCitationOpportunities } from "../lib/commands";
 import { SuggestionHighlight } from "../lib/suggestionExtension";
@@ -26,26 +39,32 @@ function extractLastSentence(text: string): string {
 interface ToolbarButtonProps {
   onClick: () => void;
   active?: boolean;
-  label: string;
+  icon: LucideIcon;
   title: string;
 }
 
-function ToolbarButton({ onClick, active, label, title }: ToolbarButtonProps): JSX.Element {
+function ToolbarButton({ onClick, active, icon: Icon, title }: ToolbarButtonProps): JSX.Element {
   return (
     <button
       type="button"
       onClick={onClick}
       title={title}
+      aria-label={title}
       aria-pressed={active}
-      className={`rounded px-2 py-1 text-sm font-medium transition-colors ${
+      className={`focus-ring flex items-center justify-center rounded-md p-2 transition-colors ${
         active
-          ? "bg-brand-500 text-white"
-          : "text-slate-700 hover:bg-slate-200 dark:text-slate-200 dark:hover:bg-slate-700"
+          ? "bg-brand-600 text-white"
+          : "text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
       }`}
     >
-      {label}
+      <Icon size={16} />
     </button>
   );
+}
+
+/** Vertical separator between toolbar groups, per the design spec's divider spec (24px tall, 8px margin). */
+function ToolbarDivider(): JSX.Element {
+  return <span className="mx-2 h-6 w-px bg-gray-200 dark:bg-gray-700" />;
 }
 
 interface EditorToolbarProps {
@@ -56,72 +75,85 @@ interface EditorToolbarProps {
 
 function EditorToolbar({ editor, onCheckCitations, isCheckingCitations }: EditorToolbarProps): JSX.Element {
   return (
-    <div className="flex flex-wrap items-center gap-1 border-b border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-700 dark:bg-slate-800">
+    <div className="flex h-14 flex-wrap items-center gap-0.5 border-b border-gray-200 bg-white px-6 dark:border-gray-700 dark:bg-topbar-dark">
+      {/* Text formatting */}
       <ToolbarButton
-        label="B"
+        icon={Bold}
         title="Bold"
         active={editor.isActive("bold")}
         onClick={() => editor.chain().focus().toggleBold().run()}
       />
       <ToolbarButton
-        label="I"
+        icon={Italic}
         title="Italic"
         active={editor.isActive("italic")}
         onClick={() => editor.chain().focus().toggleItalic().run()}
       />
       <ToolbarButton
-        label="U"
+        icon={UnderlineIcon}
         title="Underline"
         active={editor.isActive("underline")}
         onClick={() => editor.chain().focus().toggleUnderline().run()}
       />
-      <span className="mx-1 h-5 w-px bg-slate-300 dark:bg-slate-600" />
+
+      <ToolbarDivider />
+
+      {/* Block styles */}
       <ToolbarButton
-        label="H1"
+        icon={Heading1}
         title="Heading 1"
         active={editor.isActive("heading", { level: 1 })}
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
       />
       <ToolbarButton
-        label="H2"
+        icon={Heading2}
         title="Heading 2"
         active={editor.isActive("heading", { level: 2 })}
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
       />
       <ToolbarButton
-        label="H3"
+        icon={Heading3}
         title="Heading 3"
         active={editor.isActive("heading", { level: 3 })}
         onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
       />
-      <span className="mx-1 h-5 w-px bg-slate-300 dark:bg-slate-600" />
+
+      <ToolbarDivider />
+
+      {/* Lists */}
       <ToolbarButton
-        label="• List"
+        icon={List}
         title="Bullet list"
         active={editor.isActive("bulletList")}
         onClick={() => editor.chain().focus().toggleBulletList().run()}
       />
       <ToolbarButton
-        label="1. List"
+        icon={ListOrdered}
         title="Ordered list"
         active={editor.isActive("orderedList")}
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
       />
-      <span className="mx-1 h-5 w-px bg-slate-300 dark:bg-slate-600" />
+
+      <ToolbarDivider />
+
+      {/* Table */}
       <ToolbarButton
-        label="Table"
+        icon={TableIcon}
         title="Insert 3x3 table"
         onClick={() =>
           editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
         }
       />
+
+      {/* Citations — secondary/green accent, per design spec */}
       <div className="ml-auto">
         <button
           type="button"
           onClick={onCheckCitations}
           disabled={isCheckingCitations}
-          className="rounded bg-brand-500 px-3 py-1 text-sm font-medium text-white hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60"
+          className="focus-ring flex items-center gap-1.5 rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
+          <BookMarked size={15} />
           {isCheckingCitations ? "Checking…" : "Check citations"}
         </button>
       </div>
@@ -246,7 +278,7 @@ export default function DocumentEditor(): JSX.Element {
   }, [editor, citations, setCitationSuggestions]);
 
   if (!editor) {
-    return <div className="flex-1 p-6 text-slate-500">Loading editor…</div>;
+    return <div className="flex-1 p-6 text-gray-500">Loading editor…</div>;
   }
 
   return (
@@ -256,8 +288,9 @@ export default function DocumentEditor(): JSX.Element {
         onCheckCitations={() => void handleCheckCitations()}
         isCheckingCitations={isCheckingCitations}
       />
-      <div className="flex-1 overflow-y-auto bg-white dark:bg-slate-900" onClick={handleEditorClick}>
-        <div className="mx-auto max-w-3xl px-8 py-8">
+      <div className="flex-1 overflow-y-auto bg-white dark:bg-gray-800" onClick={handleEditorClick}>
+        {/* 816px matches the design spec's standard document width (Google Docs-style). */}
+        <div className="mx-auto max-w-[816px] px-8 py-12">
           <EditorContent editor={editor} />
         </div>
       </div>

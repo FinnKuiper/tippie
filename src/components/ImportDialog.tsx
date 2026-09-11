@@ -75,7 +75,7 @@ export default function ImportDialog(): JSX.Element | null {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      className="animate-fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/40"
       role="presentation"
       onClick={handleClose}
     >
@@ -83,23 +83,31 @@ export default function ImportDialog(): JSX.Element | null {
         role="dialog"
         aria-modal="true"
         aria-label="Import bibliography"
-        className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-slate-800"
+        className="animate-pop-in w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800"
         onClick={(event) => event.stopPropagation()}
       >
-        <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
+        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
           Import bibliography
         </h2>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
           Select or drop a .bib (BibTeX) file to import its entries.
         </p>
 
         <div
+          role="button"
+          tabIndex={0}
           onDragOver={(event) => event.preventDefault()}
           onDrop={handleDrop}
-          className="mt-4 flex cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-slate-300 p-8 text-center hover:border-brand-400 dark:border-slate-600"
+          className="focus-ring mt-4 flex cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-300 p-8 text-center hover:border-brand-400 dark:border-gray-600"
           onClick={() => fileInputRef.current?.click()}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              fileInputRef.current?.click();
+            }
+          }}
         >
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             {isImporting ? "Importing…" : "Click to browse or drag a .bib file here"}
           </p>
           <input
@@ -122,7 +130,7 @@ export default function ImportDialog(): JSX.Element | null {
           <button
             type="button"
             onClick={handleClose}
-            className="rounded px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700"
+            className="focus-ring rounded px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
           >
             Cancel
           </button>
