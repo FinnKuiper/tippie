@@ -396,7 +396,8 @@ Before adding a dependency:
   "zustand": "State management",
   "@tauri-apps/api": "Desktop integration",
   "tailwindcss": "Styling",
-  "typescript": "Type safety"
+  "typescript": "Type safety",
+  "lucide-react": "Icon system for toolbar/menu/status UI (tree-shakeable, no runtime deps)"
 }
 ```
 

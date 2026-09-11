@@ -75,15 +75,15 @@ export default function SuggestionPopup({ suggestion, position, onClose }: Sugge
       ref={popupRef}
       role="dialog"
       aria-label={`${TYPE_LABELS[suggestion.type]} suggestion`}
-      className="absolute z-50 w-72 rounded-lg border border-slate-200 bg-white p-3 shadow-lg dark:border-slate-700 dark:bg-slate-800"
+      className="animate-pop-in absolute z-50 w-72 origin-top-left rounded-lg border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-700 dark:bg-gray-800"
       style={{ left: position.x, top: position.y + 6 }}
     >
       <span className={`inline-block rounded px-2 py-0.5 text-xs font-semibold ${TYPE_BADGE_CLASSES[suggestion.type]}`}>
         {TYPE_LABELS[suggestion.type]}
       </span>
-      <p className="mt-2 text-sm text-slate-700 dark:text-slate-200">{suggestion.message}</p>
+      <p className="mt-2 text-sm text-gray-700 dark:text-gray-200">{suggestion.message}</p>
       {suggestion.replacement && (
-        <p className="mt-2 rounded bg-slate-100 px-2 py-1 text-sm text-slate-800 dark:bg-slate-700 dark:text-slate-100">
+        <p className="mt-2 rounded bg-gray-100 px-2 py-1 text-sm text-gray-800 dark:bg-gray-700 dark:text-gray-100">
           <span className="font-semibold">Suggested:</span> {suggestion.replacement}
         </p>
       )}
@@ -91,7 +91,7 @@ export default function SuggestionPopup({ suggestion, position, onClose }: Sugge
         <button
           type="button"
           onClick={handleDismiss}
-          className="rounded px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700"
+          className="focus-ring rounded px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
         >
           Dismiss
         </button>
@@ -99,7 +99,7 @@ export default function SuggestionPopup({ suggestion, position, onClose }: Sugge
           <button
             type="button"
             onClick={handleApply}
-            className="rounded bg-brand-500 px-2 py-1 text-xs font-medium text-white hover:bg-brand-600"
+            className="focus-ring rounded bg-brand-500 px-2 py-1 text-xs font-medium text-white hover:bg-brand-600"
           >
             Apply
           </button>

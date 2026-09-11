@@ -1,3 +1,4 @@
+import { Library, X } from "lucide-react";
 import { useDocumentStore } from "../store";
 import { formatInTextApa, formatReferenceApa } from "../lib/apa";
 import type { Citation } from "../types";
@@ -10,30 +11,34 @@ interface CitationCardProps {
 
 function CitationCard({ citation, onInsert, onRemove }: CitationCardProps): JSX.Element {
   return (
-    <li className="rounded-md border border-slate-200 p-3 dark:border-slate-700">
-      <p className="text-sm leading-snug text-slate-800 dark:text-slate-200">
+    <li
+      role="button"
+      tabIndex={0}
+      onClick={() => onInsert(citation)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") onInsert(citation);
+      }}
+      className="focus-ring group relative rounded-md border border-transparent p-3 transition-colors hover:border-gray-200 hover:bg-white dark:hover:border-gray-700 dark:hover:bg-gray-800"
+    >
+      <button
+        type="button"
+        onClick={(event) => {
+          event.stopPropagation();
+          onRemove(citation.id);
+        }}
+        aria-label={`Remove citation ${citation.id}`}
+        className="focus-ring absolute right-2 top-2 rounded p-0.5 text-gray-400 opacity-0 transition-opacity hover:bg-gray-100 hover:text-gray-600 group-hover:opacity-100 dark:hover:bg-gray-700"
+      >
+        <X size={13} />
+      </button>
+
+      <p className="pr-5 text-sm font-semibold leading-snug text-gray-900 dark:text-gray-100">
         {formatReferenceApa(citation)}
       </p>
-      <div className="mt-2 flex items-center justify-between">
-        <span className="text-xs font-mono text-slate-400">{formatInTextApa(citation)}</span>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => onInsert(citation)}
-            className="rounded bg-brand-500 px-2 py-1 text-xs font-medium text-white hover:bg-brand-600"
-          >
-            Insert
-          </button>
-          <button
-            type="button"
-            onClick={() => onRemove(citation.id)}
-            className="rounded px-2 py-1 text-xs font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700"
-            aria-label={`Remove citation ${citation.id}`}
-          >
-            ✕
-          </button>
-        </div>
-      </div>
+      <p className="mt-1 font-mono text-xs text-gray-400 dark:text-gray-500">{formatInTextApa(citation)}</p>
+      <span className="mt-1.5 inline-block text-xs font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400">
+        Insert citation
+      </span>
     </li>
   );
 }
@@ -55,41 +60,54 @@ export default function CitationPanel(): JSX.Element {
   };
 
   return (
-    <aside className="flex h-full w-80 flex-col border-l border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800">
-      <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-700">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+    <aside className="flex h-full w-80 flex-col border-l border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-900">
+      <div className="border-b border-gray-200 px-6 py-4 dark:border-gray-700">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300">
           Bibliography
         </h2>
-        <button
-          type="button"
-          onClick={() => setImportDialogOpen(true)}
-          className="rounded bg-brand-500 px-2 py-1 text-xs font-medium text-white hover:bg-brand-600"
-        >
-          Import .bib
-        </button>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">
         {citations.length === 0 ? (
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            No citations yet. Import a .bib file to get started.
-          </p>
+          <div className="py-8 text-center">
+            <Library size={28} className="mx-auto mb-3 text-gray-300 dark:text-gray-600" />
+            <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">No citations yet</p>
+            <p className="mb-4 text-xs text-gray-400 dark:text-gray-500">
+              Import a .bib file to get started
+            </p>
+            <button
+              type="button"
+              onClick={() => setImportDialogOpen(true)}
+              className="focus-ring w-full rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-700"
+            >
+              Import .bib file
+            </button>
+          </div>
         ) : (
-          <ul className="space-y-3">
-            {citations.map((citation) => (
-              <CitationCard
-                key={citation.id}
-                citation={citation}
-                onInsert={handleInsert}
-                onRemove={removeCitation}
-              />
-            ))}
-          </ul>
+          <>
+            <button
+              type="button"
+              onClick={() => setImportDialogOpen(true)}
+              className="focus-ring mb-3 w-full rounded-md border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+            >
+              Import .bib file
+            </button>
+            <ul className="space-y-1">
+              {citations.map((citation) => (
+                <CitationCard
+                  key={citation.id}
+                  citation={citation}
+                  onInsert={handleInsert}
+                  onRemove={removeCitation}
+                />
+              ))}
+            </ul>
+          </>
         )}
 
         {citationSuggestions.length > 0 && (
           <div className="mt-6">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300">
               Suggested citation spots
             </h3>
             <ul className="mt-2 space-y-2">
