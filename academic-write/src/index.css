@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100;
+}
+
+/* TipTap editor content styling */
+.ProseMirror {
+  min-height: 100%;
+  outline: none;
+}
+
+.ProseMirror p {
+  margin: 0.75em 0;
+}
+
+.ProseMirror h1 {
+  @apply text-3xl font-bold mt-6 mb-3;
+}
+
+.ProseMirror h2 {
+  @apply text-2xl font-bold mt-5 mb-2;
+}
+
+.ProseMirror h3 {
+  @apply text-xl font-semibold mt-4 mb-2;
+}
+
+.ProseMirror ul {
+  @apply list-disc pl-6;
+}
+
+.ProseMirror ol {
+  @apply list-decimal pl-6;
+}
+
+.ProseMirror table {
+  @apply border-collapse w-full my-4;
+}
+
+.ProseMirror table td,
+.ProseMirror table th {
+  @apply border border-slate-300 dark:border-slate-600 px-2 py-1;
+}
+
+.ProseMirror table th {
+  @apply bg-slate-100 dark:bg-slate-800 font-semibold text-left;
+}
+
+/* Inline citation chip inserted into the document */
+.citation-chip {
+  @apply rounded bg-brand-100 px-1 py-0.5 text-brand-800 dark:bg-brand-900 dark:text-brand-200;
+}
+
+/* Highlight span used to mark text that has an open suggestion */
+.suggestion-highlight {
+  @apply cursor-pointer rounded-sm underline decoration-wavy decoration-2 underline-offset-2;
+}
+
+.suggestion-highlight--grammar {
+  @apply decoration-red-500 bg-red-500/10;
+}
+
+.suggestion-highlight--clarity {
+  @apply decoration-amber-500 bg-amber-500/10;
+}
+
+.suggestion-highlight--style {
+  @apply decoration-blue-500 bg-blue-500/10;
+}
+
+.suggestion-highlight--citation {
+  @apply decoration-emerald-500 bg-emerald-500/10;
+}

@@ -1,0 +1,36 @@
+[package]
+name = "academic-write"
+version = "0.1.0"
+description = "Local-first, AI-powered academic document editor"
+authors = ["AcademicWrite contributors"]
+edition = "2021"
+rust-version = "1.77"
+
+[lib]
+name = "academic_write_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync"] }
+
+# TODO(local-llm): once a local model is bundled, add the inference crate here, e.g.:
+#   llama-cpp-2 = "0.1"
+# and load the .gguf model referenced by an app setting / env var. Keep this
+# dependency optional (behind a Cargo feature) so contributors without a
+# model file can still build and run the app with mock suggestions.
+
+[features]
+# Enable once real local-LLM inference is wired up in commands/ai.rs.
+local-llm = []
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
