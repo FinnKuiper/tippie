@@ -70,3 +70,39 @@ export interface AcademicDocument {
   citations: Citation[];
   lastSaved: string | null;
 }
+
+/** Title and timestamps for a saved `.awrite` document. */
+export interface DocumentMetadata {
+  title: string;
+  /** ISO 8601 timestamp set once, when the document is first saved. */
+  createdAt: string;
+  /** ISO 8601 timestamp, updated on every save. */
+  lastModified: string;
+}
+
+/** The document body, in the formats the frontend needs. */
+export interface DocumentBody {
+  /** TipTap's HTML serialization — the source of truth. */
+  html: string;
+  /**
+   * Markdown rendering of `html`. Currently always empty — see
+   * `src-tauri/src/models/mod.rs` `DocumentBody` for why this is deferred.
+   */
+  markdown: string;
+}
+
+/** On-disk representation of a `.awrite` file, mirrors the Rust `SavedDocument` struct. */
+export interface SavedDocument {
+  /** File format version, for forward compatibility. Currently always "1.0". */
+  version: string;
+  metadata: DocumentMetadata;
+  content: DocumentBody;
+  bibliography: Citation[];
+}
+
+/** Structured error returned by document file-I/O commands (see `commands/documents.rs`). */
+export interface DocumentError {
+  code: string;
+  message: string;
+  path?: string;
+}

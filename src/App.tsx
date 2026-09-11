@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import DocumentEditor from "./components/DocumentEditor";
 import CitationPanel from "./components/CitationPanel";
 import ImportDialog from "./components/ImportDialog";
+import FileMenu from "./components/FileMenu";
 import { useDocumentStore } from "./store";
+import { useDocumentFileActions } from "./hooks/useDocumentFileActions";
 
 function useDarkMode(): [boolean, () => void] {
   const [isDark, setIsDark] = useState<boolean>(
@@ -16,17 +18,46 @@ function useDarkMode(): [boolean, () => void] {
   return [isDark, () => setIsDark((prev) => !prev)];
 }
 
-function formatLastSaved(iso: string | null): string {
-  if (!iso) return "Not saved yet";
-  return `Saved ${new Date(iso).toLocaleTimeString()}`;
+/**
+ * Registers Ctrl/Cmd+S (Save), Ctrl/Cmd+O (Open), and Ctrl/Cmd+N (New) as
+ * global shortcuts for the File menu actions.
+ */
+function useFileKeyboardShortcuts(): void {
+  const { newDocument, openDocument, saveDocument } = useDocumentFileActions();
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent): void => {
+      const isModifierPressed = event.ctrlKey || event.metaKey;
+      if (!isModifierPressed) return;
+
+      switch (event.key.toLowerCase()) {
+        case "s":
+          event.preventDefault();
+          void saveDocument();
+          break;
+        case "o":
+          event.preventDefault();
+          void openDocument();
+          break;
+        case "n":
+          event.preventDefault();
+          newDocument();
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [newDocument, openDocument, saveDocument]);
 }
 
 /** Top-level app shell: header, editor + citation sidebar, and dialogs. */
 export default function App(): JSX.Element {
   const [isDark, toggleDark] = useDarkMode();
-  const lastSaved = useDocumentStore((state) => state.lastSaved);
-  const markSaved = useDocumentStore((state) => state.markSaved);
   const isCheckingSuggestions = useDocumentStore((state) => state.isCheckingSuggestions);
+  useFileKeyboardShortcuts();
 
   return (
     <div className="flex h-screen flex-col">
@@ -37,14 +68,7 @@ export default function App(): JSX.Element {
         </div>
         <div className="flex items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
           {isCheckingSuggestions && <span>Checking suggestions…</span>}
-          <span>{formatLastSaved(lastSaved)}</span>
-          <button
-            type="button"
-            onClick={() => markSaved()}
-            className="rounded bg-brand-500 px-3 py-1 text-xs font-medium text-white hover:bg-brand-600"
-          >
-            Save
-          </button>
+          <FileMenu />
           <button
             type="button"
             onClick={toggleDark}

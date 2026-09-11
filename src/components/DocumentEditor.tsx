@@ -136,6 +136,7 @@ function EditorToolbar({ editor, onCheckCitations, isCheckingCitations }: Editor
  */
 export default function DocumentEditor(): JSX.Element {
   const setContent = useDocumentStore((state) => state.setContent);
+  const setIsDirty = useDocumentStore((state) => state.setIsDirty);
   const suggestions = useDocumentStore((state) => state.suggestions);
   const addSuggestion = useDocumentStore((state) => state.addSuggestion);
   const setCitationSuggestions = useDocumentStore((state) => state.setCitationSuggestions);
@@ -179,9 +180,13 @@ export default function DocumentEditor(): JSX.Element {
       SuggestionHighlight,
     ],
     content: "<h1>Untitled Document</h1><p>Start writing your academic paper here…</p>",
+    // Fires on genuine user edits only: `useDocumentFileActions` passes
+    // `emitUpdate: false` to `setContent` for New/Open, so loading a
+    // document doesn't spuriously mark it dirty here.
     onUpdate: ({ editor: updatedEditor }) => {
       const html = updatedEditor.getHTML();
       setContent(html);
+      setIsDirty(true);
 
       window.clearTimeout(debounceRef.current);
       debounceRef.current = window.setTimeout(() => {
