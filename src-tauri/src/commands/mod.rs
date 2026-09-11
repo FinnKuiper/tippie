@@ -3,3 +3,4 @@
 
 pub mod ai;
 pub mod citations;
+pub mod documents;

@@ -15,9 +15,13 @@ tauri-build = { version = "2", features = [] }
 
 [dependencies]
 tauri = { version = "2", features = [] }
+# Native Open/Save file dialogs for the document-management feature
+# (FileMenu.tsx). See `capabilities/default.json` for the matching
+# `dialog:allow-open` / `dialog:allow-save` permissions.
+tauri-plugin-dialog = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "fs"] }
 
 # TODO(local-llm): once a local model is bundled, add the inference crate here, e.g.:
 #   llama-cpp-2 = "0.1"
